@@ -1,0 +1,4 @@
+bison -o yacc.cpp -d yacc.y
+flex -o lex.cpp lex.l
+
+

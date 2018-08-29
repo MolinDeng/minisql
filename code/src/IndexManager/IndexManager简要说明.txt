@@ -1,0 +1,105 @@
+bool CreateIndex(const char* filename, int KeyLength)
+需要的参数信息：
+索引名-filenmae，键值长度-KeyLength 
+
+函数功能：
+创建一个mdb文件
+在id为0的block上储存文件头，信息的顺序：阶数-oreder，键值长度-KeyLength, 根节点的block_id-root, 节点个数-NodeCount, 第一个空的block_id-FistEmpty,共20个字节
+
+
+创建失败：
+cerr << "Fail to create the file of the index." << endl;
+返回 false
+
+创建成功：
+返回 true
+
+
+
+bool DropIndex(const char* filename)
+需要的参数信心：
+索引名-filename
+
+函数功能：
+删除该索引名对应的mdb文件
+
+删除失败：
+cerr << "Fail to drop this index file." << endl;
+返回 false
+
+删除成功：
+返回 true
+
+对BufferManager要求：
+当block写入磁盘时，若相应的索引文件已经被删除，该block就不写入直接清除
+
+
+
+int Find(const char* filename, const char* key)
+需要的参数信息：
+索引名-filename,键值-key
+
+函数功能：
+根据所提供的索引名和键值在B+树中查找相应的值，返回该值在record file中对应的块号
+
+找不到索引文件：
+cerr << "Can't find" + string(filename) + "index file" << endl;
+返回 -2
+
+对BufferManager要求：
+当GetBlock函数要求到不存在的索引名时，要返回一个初始化的块
+
+找不到该键值：
+cerr << "Can't find this key" << endl;
+返回 -1;
+
+成功：
+返回 pointer
+
+
+
+
+bool Insert(const char* filename, const char* key, const int value)
+需要的参数信息：
+索引名-filename， 键值-key, 该键值在record中对应表的mdb文件里的相应block_id-value;
+
+函数功能：
+将该键值和指针插入到相应的B+树中
+更新更新文件头
+
+插入成功：
+返回 true
+
+插入失败：
+返回 false
+额外->若插入失败的原因是该键值已存在
+cerr << "This key already existed." << endl;
+若插入失败的原因是找不到索引文件
+cerr << "Can't find" + string(filename) + "index file" << endl;
+
+
+对BufferManager要求：
+block的初始化要用int 0初始化前20个字节 
+
+
+
+
+bool Remove(const char* filename, const char* key)
+需要的参数信息：
+索引名-filename， 键值-key
+
+函数功能：
+移除B+树中相应的键
+更新文件头
+
+移除失败：
+返回 false
+额外->若移除失败原因是该键值不存在
+cerr << "Can't find this key" << endl;
+若移除失败的原因是找不到索引文件
+cerr << "Can't find" + string(filename) + "index file" << endl;
+
+移除成功
+返回 true
+
+
